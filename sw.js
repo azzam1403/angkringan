@@ -1,5 +1,5 @@
 // Naikkan angka versi ini setiap kali Anda mengubah file aplikasi.
-const CACHE = "kas-angkringan-v1";
+const CACHE = "kas-angkringan-v2";
 const FILES = ["./", "./index.html", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png",
   "./icons/icon-maskable-512.png", "./icons/apple-touch-icon.png"];
