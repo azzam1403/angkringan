@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kas Angkringan</title>
+<meta name="theme-color" content="#2f6b4f">
+<meta name="description" content="Catat penjualan, pengeluaran, dan kasbon angkringan. Jalan tanpa internet.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kas Angkringan">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{--bg:#eef1ec;--card:#fff;--ink:#1f2a27;--mute:#6a766f;--line:#d8ded7;--green:#2f6b4f;--onGreen:#fff;--amber:#b87410;--red:#b3412f;--chip:#e2e8e0;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#151b19;--card:#1e2724;--ink:#eef2ee;--mute:#98a59d;--line:#2d3833;--green:#5fbf93;--onGreen:#0e1f17;--amber:#e8a63c;--red:#ef7d69;--chip:#27332e}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#151b19;--card:#1e2724;--ink:#eef2ee;--mute:#98a59d;--line:#2d3833;--green:#5fbf93;--onGreen:#0e1f17;--amber:#e8a63c;--red:#ef7d69;--chip:#27332e}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:520px;margin:0 auto;padding:16px 16px calc(150px + env(safe-area-inset-bottom,0px))}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+h1{font-size:22px;margin:0;font-weight:800}
+.date{color:var(--mute);font-size:13px;font-weight:500}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.menu{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 12px;text-align:left;min-height:84px;position:relative;display:flex;flex-direction:column;justify-content:space-between}
+.menu b{font-size:16px;font-weight:700}
+.menu span{color:var(--mute);font-size:14px;font-weight:500}
+.menu:active{transform:scale(.98)}
+.menu.on{border-color:var(--green);background:color-mix(in srgb,var(--green) 12%,var(--card))}
+.qty{position:absolute;top:8px;right:8px;background:var(--green);color:var(--onGreen);border-radius:99px;min-width:28px;height:28px;display:grid;place-items:center;font-weight:800;font-size:14px;padding:0 8px}
+.bar{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom,0px));padding:10px 16px;background:var(--bg);border-top:1px solid var(--line)}
+.bar .in{max-width:520px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.total{flex:1;font-size:13px;color:var(--mute)}
+.total b{display:block;font-size:22px;color:var(--ink);font-weight:800}
+.btn{background:var(--green);color:var(--onGreen);font-weight:800;font-size:17px;padding:15px 22px;border-radius:14px}
+.btn:disabled{opacity:.4}
+.ghost{background:var(--chip);color:var(--ink);font-weight:700;font-size:14px;padding:12px 14px;border-radius:12px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;background:none;padding:12px 0;font-weight:700;font-size:13px;color:var(--mute);min-height:64px}
+nav button[aria-selected="true"]{color:var(--green);box-shadow:inset 0 3px 0 var(--green)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px}
+.chip{background:var(--chip);padding:12px 16px;border-radius:99px;font-weight:700;font-size:15px}
+.chip[aria-pressed="true"]{background:var(--red);color:#fff}
+label{font-weight:700;font-size:14px}
+input{width:100%;font:inherit;font-size:28px;font-weight:800;padding:14px;margin:8px 0 12px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.quick{display:flex;gap:8px;margin-bottom:18px}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.box{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px}
+.box small{color:var(--mute);font-weight:500;font-size:13px}
+.box b{display:block;font-size:20px;font-weight:800;margin-top:4px}
+.big{grid-column:1/-1;background:var(--green);color:var(--onGreen);border-color:var(--green)}
+.big small{color:inherit;opacity:.85}
+.big b{font-size:32px}
+h2{font-size:16px;margin:20px 0 8px;font-weight:800}
+.row{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:15px}
+.row small{display:block;color:var(--mute);font-size:12px}
+.in-{color:var(--green);font-weight:800}.out-{color:var(--red);font-weight:800}
+.bars .row{display:block}
+.track{height:8px;border-radius:9px;background:var(--chip);margin-top:6px;overflow:hidden}
+.track i{display:block;height:100%;background:var(--amber)}
+.empty{color:var(--mute);padding:14px 0;font-size:14px}
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-weight:700;font-size:14px;z-index:9}
+.foot{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
+.mrow{display:flex;gap:8px;margin-bottom:8px}.mrow input{font-size:16px;margin:0;padding:12px;font-weight:700;width:auto}.mrow .mn{flex:1;min-width:0}.mrow .mp{width:96px}.row{align-items:center}.row .in-,.row .out-{margin-left:auto}.x{padding:6px 10px;font-size:12px}
+.sm{font-size:18px}.ei{width:110px;font-size:16px;margin:0 0 0 auto;padding:8px}.owe{color:var(--amber);font-weight:800;margin-left:auto}
+#rcp{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;overflow:auto}
+.paper{background:#fff;color:#000;width:100%;max-width:300px;padding:18px 16px;font-family:"Courier New",ui-monospace,monospace;font-size:13px;line-height:1.5;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.paper hr{border:0;border-top:1px dashed #000;margin:8px 0}
+.rc{text-align:center;font-weight:700;font-size:16px}.rm{text-align:center;font-size:12px}
+.rl{display:flex;justify-content:space-between;gap:8px}.rt{font-weight:700;font-size:15px}.acts{display:flex;gap:10px}
+@media print{html,body{background:#fff!important}body>*:not(#rcp){display:none!important}#rcp{position:static!important;display:block!important;background:none!important;padding:0!important}.paper{box-shadow:none!important;max-width:none!important;width:100%!important;padding:0!important}.noprint{display:none!important}@page{size:58mm auto;margin:2mm}}
+.note{color:var(--mute);font-size:12px;margin-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <header><h1>Kas Angkringan</h1><div class="date" id="date"></div></header>
+  <section id="view"></section>
+</main>
+<div class="bar" id="bar"><div class="in"><div class="total">Pesanan<b id="tot">Rp 0</b></div><button class="ghost" id="clr">Ulang</button><button class="btn" id="ok" disabled>Catat</button></div></div>
+<nav role="tablist">
+  <button role="tab" data-t="jual">Jual</button>
+  <button role="tab" data-t="keluar">Keluar</button>
+  <button role="tab" data-t="kasbon">Kasbon</button>
+  <button role="tab" data-t="hari">Hari ini</button>
+  <button role="tab" data-t="menu">Menu</button>
+</nav>
+<script>
+var MENU=[["Nasi kucing",3000],["Sate usus",2000],["Sate telur puyuh",2500],["Gorengan",1000],["Es teh",3000],["Kopi jos",5000],["Teh panas",2500],["Wedang jahe",4000]];
+var CATS=["Bahan","Arang/Gas","Listrik","Titipan","Lainnya"];
+var KEY="angkringan-kas-v1",S={sales:[],exp:[]},tab="jual",cart={},cat="Bahan",amt="";
+try{var r=localStorage.getItem(KEY);if(r)S=JSON.parse(r)}catch(e){}
+if(!S.menu)S.menu=MENU.map(function(m){return[m[0],m[1]]});MENU=S.menu;if(!S.debts)S.debts=[];if(!S.shop)S.shop="Angkringan Saya";var ed=null,dn="",da="",dp=null;window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e;if(tab==="hari")render()});
+function esc(x){return String(x).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")}
+function showReceipt(x){var o=$("rcp");if(o)o.remove();var d=new Date(x.t);var L=x.items.length?x.items.map(function(i){return '<div class="rl"><span>'+i.q+' x '+esc(i.n)+'</span><span>'+rp(i.p*i.q)+'</span></div>'}).join(""):'<div class="rl"><span>'+esc(x.note||"")+'</span></div>';
+o=document.createElement("div");o.id="rcp";o.innerHTML='<div class="paper"><div class="rc">'+esc(S.shop)+'</div><div class="rm">'+d.toLocaleString("id-ID",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})+'</div><hr>'+L+'<hr><div class="rl rt"><span>TOTAL</span><span>'+rp(x.total)+'</span></div><div class="rm" style="margin-top:10px">Terima kasih, sampai jumpa lagi</div></div><div class="noprint acts"><button class="btn" id="rcPrint">Cetak struk</button><button class="ghost" id="rcClose">Tutup</button></div>';document.body.appendChild(o)}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+var $=function(i){return document.getElementById(i)};
+function rp(n){return "Rp "+Math.round(n).toLocaleString("id-ID")}
+function today(t){var d=new Date(t),n=new Date();return d.toDateString()===n.toDateString()}
+function toast(m){var d=document.createElement("div");d.className="toast";d.textContent=m;document.body.appendChild(d);setTimeout(function(){d.remove()},1600)}
+function cartTotal(){return MENU.reduce(function(a,m,i){return a+(cart[i]||0)*m[1]},0)}
+function updBar(){var t=cartTotal();$("tot").textContent=rp(t);$("ok").disabled=!t;$("clr").style.visibility=t?"visible":"hidden"}
+function render(){
+  document.querySelectorAll("nav button").forEach(function(b){b.setAttribute("aria-selected",b.dataset.t===tab)});
+  $("bar").style.display=tab==="jual"?"block":"none";
+  var v=$("view");
+  if(tab==="jual"){
+    v.innerHTML='<div class="grid">'+MENU.map(function(m,i){var q=cart[i]||0;return '<button class="menu'+(q?' on':'')+'" data-i="'+i+'"><b>'+m[0]+'</b><span>'+rp(m[1])+'</span>'+(q?'<div class="qty">'+q+'</div>':'')+'</button>'}).join("")+'</div><p class="note">Ketuk menu untuk menambah. Ketuk "Catat" kalau pembeli sudah bayar.</p>';
+    updBar();
+  }else if(tab==="keluar"){
+    v.innerHTML='<label>Untuk apa?</label><div class="chips">'+CATS.map(function(c){return '<button class="chip" data-c="'+c+'" aria-pressed="'+(c===cat)+'">'+c+'</button>'}).join("")+'</div><label for="amt">Berapa?</label><input id="amt" inputmode="numeric" placeholder="Rp 0" value="'+(amt?Number(amt).toLocaleString("id-ID"):"")+'"><div class="quick">'+[10000,25000,50000,100000].map(function(n){return '<button class="ghost" data-q="'+n+'">+'+n/1000+'rb</button>'}).join("")+'</div><button class="btn" id="saveExp" style="width:100%">Catat pengeluaran</button>';
+    $("amt").oninput=function(e){amt=e.target.value.replace(/\D/g,"");e.target.value=amt?Number(amt).toLocaleString("id-ID"):""};
+  }else if(tab==="kasbon"){
+    var sum=0,rows="";S.debts.forEach(function(d,i){if(d.paid)return;sum+=d.amt;rows+='<div class="row"><div>'+esc(d.name)+'<small>'+new Date(d.t).toLocaleDateString("id-ID",{day:"numeric",month:"short"})+'</small></div><span class="owe">'+rp(d.amt)+'</span><button class="ghost x" data-l="'+i+'">Lunas</button><button class="ghost x" data-g="'+i+'">Hapus</button></div>'});
+    v.innerHTML='<div class="box big" style="margin-bottom:14px"><small>Belum dibayar</small><b>'+rp(sum)+'</b></div><label for="dn">Siapa?</label><input id="dn" class="sm" placeholder="Nama pelanggan" value="'+esc(dn)+'"><label for="da">Berapa?</label><input id="da" inputmode="numeric" placeholder="Rp 0" value="'+(da?Number(da).toLocaleString("id-ID"):"")+'"><button class="btn" id="addD" style="width:100%">Catat kasbon</button><h2>Daftar kasbon</h2>'+(rows||'<div class="empty">Belum ada kasbon. Semua lunas.</div>');
+    $("dn").oninput=function(e){dn=e.target.value};
+    $("da").oninput=function(e){da=e.target.value.replace(/\D/g,"");e.target.value=da?Number(da).toLocaleString("id-ID"):""};
+  }else if(tab==="menu"){
+    v.innerHTML='<label for="shop">Nama di struk</label><input id="shop" class="sm" value="'+esc(S.shop)+'"><p class="note" style="margin-top:0">Ubah nama atau harga langsung di kolom. Tersimpan otomatis.</p>'+MENU.map(function(m,i){return '<div class="mrow"><input class="mn" data-n="'+i+'" value="'+esc(m[0])+'" aria-label="Nama menu"><input class="mp" data-p="'+i+'" inputmode="numeric" value="'+m[1]+'" aria-label="Harga"><button class="ghost" data-d="'+i+'" aria-label="Hapus menu">Hapus</button></div>'}).join("")+'<button class="btn" id="addM" style="width:100%;margin-top:12px">Tambah menu</button>';
+  }else{
+    var s=S.sales.filter(function(x){return today(x.t)}),e=S.exp.filter(function(x){return today(x.t)});
+    var om=s.reduce(function(a,x){return a+x.total},0),kl=e.reduce(function(a,x){return a+x.amt},0),un=om-kl;
+    var cnt={};s.forEach(function(x){x.items.forEach(function(it){cnt[it.n]=(cnt[it.n]||0)+it.q})});
+    var top=Object.keys(cnt).map(function(k){return[k,cnt[k]]}).sort(function(a,b){return b[1]-a[1]}).slice(0,4),mx=top.length?top[0][1]:1;
+    var all=[];S.sales.forEach(function(x,i){if(today(x.t))all.push({t:x.t,k:1,i:i,l:x.note||x.items.map(function(z){return z.q+" "+z.n}).join(", "),v:x.total})});S.exp.forEach(function(x,i){if(today(x.t))all.push({t:x.t,k:0,i:i,l:x.cat,v:x.amt})});all.sort(function(a,b){return b.t-a.t});
+    v.innerHTML='<div class="sum"><div class="box big"><small>Untung hari ini</small><b>'+rp(un)+'</b></div><div class="box"><small>Uang masuk</small><b>'+rp(om)+'</b></div><div class="box"><small>Uang keluar</small><b>'+rp(kl)+'</b></div></div>'
+    +(top.length?'<h2>Paling laku</h2><div class="bars">'+top.map(function(t){return '<div class="row"><div style="width:100%"><div style="display:flex;justify-content:space-between"><span>'+t[0]+'</span><b>'+t[1]+'</b></div><div class="track"><i style="width:'+t[1]/mx*100+'%"></i></div></div></div>'}).join("")+'</div>':'')
+    +'<h2>Catatan hari ini</h2>'+(all.length?all.map(function(x){var d=new Date(x.t),key=(x.k?"s":"e")+x.i;if(ed===key)return '<div class="row"><div>'+x.l+'</div><input class="ei" id="ei" inputmode="numeric" value="'+x.v+'"><button class="ghost x" data-sv="'+key+'">Simpan</button></div>';return '<div class="row"><div>'+x.l+'<small>'+d.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+'</small></div><span class="'+(x.k?'in-':'out-')+'">'+(x.k?'+':'-')+rp(x.v)+'</span>'+(x.k&&!S.sales[x.i].note?'<button class="ghost x" data-r="'+x.i+'">Struk</button>':'')+'<button class="ghost x" data-e="'+(x.k?"s":"e")+x.i+'">Ubah</button><button class="ghost x" data-x="'+(x.k?"s":"e")+x.i+'">Hapus</button></div>'}).join(""):'<div class="empty">Belum ada catatan. Mulai dari tab Jual.</div>')
+    +'<div class="foot">'+(dp?'<button class="ghost" id="inst">Pasang aplikasi</button>':'')+'<button class="ghost" id="demo">Isi contoh data</button><button class="ghost" id="csv">Unduh ringkasan</button><button class="ghost" id="rst">Hapus semua</button></div>';
+  }
+}
+document.addEventListener("click",function(ev){
+  var t=ev.target.closest("button");if(!t)return;
+  if(t.dataset.t){tab=t.dataset.t;ed=null;render();return}
+  if(t.dataset.i!==undefined){var i=t.dataset.i;cart[i]=(cart[i]||0)+1;render();return}
+  if(t.dataset.d!==undefined){MENU.splice(Number(t.dataset.d),1);cart={};save();render();return}
+  if(t.dataset.x){var kd=t.dataset.x.charAt(0),ix=Number(t.dataset.x.slice(1));(kd==="s"?S.sales:S.exp).splice(ix,1);save();toast("Dihapus");render();return}
+  if(t.id==="addM"){MENU.push(["Menu baru",0]);save();render();return}
+  if(t.id==="inst"&&dp){dp.prompt();dp=null;render();return}
+  if(t.id==="rcClose"){var ov=$("rcp");if(ov)ov.remove();return}
+  if(t.id==="rcPrint"){try{window.print()}catch(e){toast("Cetak tidak tersedia di pratinjau ini")}return}
+  if(t.dataset.r){showReceipt(S.sales[Number(t.dataset.r)]);return}
+  if(t.dataset.e){ed=t.dataset.e;render();return}
+  if(t.dataset.sv){var k2=t.dataset.sv,n2=Number(($("ei").value||"").replace(/\D/g,""));if(!n2){toast("Isi nominalnya dulu");return}var o=Number(k2.slice(1));if(k2.charAt(0)==="s")S.sales[o].total=n2;else S.exp[o].amt=n2;ed=null;save();toast("Tersimpan");render();return}
+  if(t.id==="addD"){if(!dn.trim()||!Number(da)){toast("Isi nama dan nominal");return}S.debts.push({name:dn.trim(),amt:Number(da),t:Date.now(),paid:false});dn="";da="";save();toast("Tercatat");render();return}
+  if(t.dataset.l){var d=S.debts[Number(t.dataset.l)];d.paid=true;S.sales.push({t:Date.now(),items:[],note:"Kasbon lunas: "+d.name,total:d.amt});save();toast("Lunas, masuk uang masuk");render();return}
+  if(t.dataset.g){S.debts.splice(Number(t.dataset.g),1);save();render();return}
+  if(t.dataset.c){cat=t.dataset.c;render();return}
+  if(t.dataset.q){amt=String((Number(amt)||0)+Number(t.dataset.q));render();return}
+  if(t.id==="clr"){cart={};render();return}
+  if(t.id==="ok"){var items=[];MENU.forEach(function(m,i){if(cart[i])items.push({n:m[0],p:m[1],q:cart[i]})});S.sales.push({t:Date.now(),items:items,total:cartTotal()});save();cart={};render();showReceipt(S.sales[S.sales.length-1]);return}
+  if(t.id==="saveExp"){if(!Number(amt)){toast("Isi nominalnya dulu");return}S.exp.push({t:Date.now(),cat:cat,amt:Number(amt)});save();amt="";toast("Tercatat");render();return}
+  if(t.id==="demo"){if(MENU.length<6){toast("Contoh data butuh minimal 6 menu");return}var n=Date.now(),h=3600000;[[0,[0,0,1,1,3,3,3]],[1,[4,3,3]],[2,[5,0,2,3]],[3,[0,1,1,4]],[4,[5,5,3]]].forEach(function(p){var it=p[1].reduce(function(a,i){a[i]=(a[i]||0)+1;return a},{}),items=[],tot=0;Object.keys(it).forEach(function(i){items.push({n:MENU[i][0],p:MENU[i][1],q:it[i]});tot+=MENU[i][1]*it[i]});S.sales.push({t:n-(p[0]+1)*h*0.6,items:items,total:tot})});S.exp.push({t:n-5*h,cat:"Bahan",amt:45000},{t:n-4*h,cat:"Arang/Gas",amt:20000});save();render();return}
+  if(t.id==="csv"){var tx="Waktu,Jenis,Keterangan,Nominal\n"+S.sales.map(function(x){return new Date(x.t).toLocaleString("id-ID")+",Masuk,\""+x.items.map(function(i){return i.q+" "+i.n}).join("; ")+"\","+x.total}).concat(S.exp.map(function(x){return new Date(x.t).toLocaleString("id-ID")+",Keluar,"+x.cat+","+x.amt})).join("\n");var b=new Blob(["\ufeff"+tx],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="kas-angkringan-"+new Date().toISOString().slice(0,10)+".csv";document.body.appendChild(a);a.click();a.remove();toast("Mengunduh CSV");return}
+  if(t.id==="rst"){S={sales:[],exp:[],menu:MENU,debts:S.debts,shop:S.shop};cart={};save();render()}
+});
+document.addEventListener("input",function(ev){var t=ev.target;if(t.dataset.n!==undefined){MENU[t.dataset.n][0]=t.value;save()}else if(t.dataset.p!==undefined){MENU[t.dataset.p][1]=Number(t.value.replace(/\D/g,""))||0;save()}else if(t.id==="shop"){S.shop=t.value;save()}});
+$("date").textContent=new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"});
+render();
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").catch(function(){})})}
+</script>
+</body>
+</html>
